@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# This script restart openntpd whenever a new IPv4 pops.
+ip -4 -brief address show | grep -v lo | grep -q UP &&
+    sv restart openntpd >/dev/null
+
+ip -4 monitor address |
+while read -r line; do
+    echo "$line" | grep -v Deleted | grep -q inet &&
+        sv restart openntpd >/dev/null
+done
